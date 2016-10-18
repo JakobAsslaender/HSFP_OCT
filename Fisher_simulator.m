@@ -81,14 +81,12 @@ for n = Nspin:-1:1
             end
             
             U(k+1,:,:,1:k) = reshape(Dn * R(fa(k)) * reshape(U(k,:,:,1:k), [3 3*k]), [1 3 3 k]);
-            dMdT1 = dDdT1n * RM + Dn * (R(fa(k)) * dMdT1);
-            dMdT2 = dDdT2n * RM + Dn * (R(fa(k)) * dMdT2);
-            M     = squeeze(U(k+1,:,:,1))*M0;
-        else
-            dMdT1 = dDdT1n * RM + Dn * (R(fa(k)) * dMdT1);
-            dMdT2 = dDdT2n * RM + Dn * (R(fa(k)) * dMdT2);
-            M     =     Dn * RM;
         end
+        
+        dMdT1 = dDdT1n * RM + Dn * (R(fa(k)) * dMdT1);
+        dMdT2 = dDdT2n * RM + Dn * (R(fa(k)) * dMdT2);
+        M     =     Dn * RM;
+            
         y(k,1,n) = [0 1 0]*M;
         y(k,2,n) = [0 1 0]*dMdT1;
         y(k,3,n) = [0 1 0]*dMdT2;

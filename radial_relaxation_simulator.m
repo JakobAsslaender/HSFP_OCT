@@ -70,14 +70,11 @@ for n = Nspin:-1:1
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             U(k+1,:,:,1:k) = reshape(D(TR,T1(n),T2(n),phi(k)) * reshape(U(k,:,:,1:k), [2 2*k]), [1 2 2 k]);
-%             dMdT1 = dDdT1n * RM + Dn * (R(fa(k)) * dMdT1);
-%             dMdT2 = dDdT2n * RM + Dn * (R(fa(k)) * dMdT2);
-            r     = squeeze(U(k+1,:,:,1))*[1; 1];
-        else
-            drdT1 = dDdT1(TR,T1(n),T2(n),phi(k)) * r + D(TR,T1(n),T2(n),phi(k)) * drdT1;
-            drdT2 = dDdT2(TR,T1(n),T2(n),phi(k)) * r + D(TR,T1(n),T2(n),phi(k)) * drdT2;
-            r     =     D(TR,T1(n),T2(n),phi(k)) * r;
         end
+        
+        drdT1 = dDdT1(TR,T1(n),T2(n),phi(k)) * r + D(TR,T1(n),T2(n),phi(k)) * drdT1;
+        drdT2 = dDdT2(TR,T1(n),T2(n),phi(k)) * r + D(TR,T1(n),T2(n),phi(k)) * drdT2;
+        r     =     D(TR,T1(n),T2(n),phi(k)) * r;
         
         y(k,1,n) = r    (2) .* sin(phi(k));
         y(k,2,n) = drdT1(2) .* sin(phi(k));
