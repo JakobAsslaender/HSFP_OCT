@@ -1,8 +1,4 @@
-function [C, gr] = cost_Fisher(theta, simulator, weights, correlate, lambda)
-
-if nargin < 5 || isempty(lambda)
-    lambda = 0;
-end
+function [C, gr] = CRB(theta, simulator, weights, correlate)
 
 if nargin < 4 || isempty(correlate)
     correlate = ones(size(weights));
@@ -10,7 +6,7 @@ end
 
 C = 0;
 if nargout > 1
-    [y,z,dy,~] = simulator(theta);
+    [y,~,dy,~] = simulator(theta);
 else
     y = simulator(theta);
 end
@@ -24,21 +20,11 @@ for n=1:Nspin
     
     % Optimize for the average of all parameters and all spins
     C = C + sum(diag(Im1) .* weights(correlate,n));
-    
-    % Optimize only for the worst parameter of the worst spin
-    %     [Cn, param_idx] = max(diag(Im1));
-    %     disp(param_idx);
-%     Cn = Im1(param_idx, param_idx);
-%     if Cn > C
-%         C = Cn;
-%         n_idx = n;
-%     end
 end
 
 % Normalize the cost
 C = C/Nspin;
 
-C = C + lambda * sum((theta(1:end-1) - theta(2:end)).^2);
 
 
 %% Calculate the gradient
@@ -56,23 +42,7 @@ if nargout > 1
             gr(k) = gr(k) - sum(diag(Im1 * dIda * Im1) .* weights(correlate,n));
         end
     end
-    gr = gr /(Nspin^2) ;
-    
-    gr = gr + lambda * (2 * [(theta(1:end-1) - theta(2:end)), 0] - 2 * [0, (theta(1:end-1) - theta(2:end))]);
-    
-    % Optimize only for the worst parameter of the worst spin
-%     for k = 1:Npulse
-%         for n = 1:Nspin
-%             for m = size(dy,3):-1:1
-%                 for l = size(y,2):-1:1
-%                     dIda(l,m) = 2 * real(dy(:,k,m,n)'*y(:,l,n));
-%                 end
-%             end
-%             crb = diag(Im1 * dIda * Im1);
-%             gr(k) = gr(k) - crb(param_idx);
-%         end
-%     end
-%     gr = gr /(Nspin^2);
+    gr = gr /(Nspin^2);
 end
 
 
