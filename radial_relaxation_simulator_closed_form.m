@@ -1,4 +1,4 @@
-function [y,z,dy,dz] = radial_relaxation_simulator_analytical(theta, TR, T1, T2, r0)
+function [y,z,dy,dz] = radial_relaxation_simulator_closed_form(theta, TR, T1, T2, r0)
 
 
 %% Dimensions
