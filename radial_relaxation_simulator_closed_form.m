@@ -1,5 +1,9 @@
 function [y,z,dy,dz] = radial_relaxation_simulator_closed_form(theta, TR, T1, T2, r0)
 
+if ~isreal(theta)
+    phi = angle(theta);
+    theta = asin(sqrt(sin(abs(theta)).^2 ./ (cos(abs(theta)).^2 .* cos(phi/2).^2 + sin(abs(theta)).^2)));
+end
 
 %% Dimensions
 Nspin  = length(T1);
