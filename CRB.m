@@ -22,8 +22,8 @@ for n=1:Nspin
     C = C + sum(diag(Im1) .* weights(correlate,n));
 end
 
-% Normalize the cost
-C = C/Nspin;
+% Normalize the cost; the abs is just in case the inversion failed
+C = abs(C/Nspin);
 
 
 

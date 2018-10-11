@@ -1,11 +1,17 @@
-function [y,z,dy,dz] = ssfp_simulator(alpha, T1, T2)
+function [y,z,dy,dz] = ssfp_simulator(alpha, TR, T1, T2, B0, B1)
 
-
-%% Dimensions
 Npulse = length(alpha);
 
-%% Loop over different T1, T2 values
-dy = zeros(Npulse,Npulse,2);
+%% B0 and B1 correction + some precalculations
+% B1:
+alpha = B1 * alpha;
+% B0:
+alpha = 2 * asin(sqrt(sin(alpha/2).^2 ./ (cos(alpha/2).^2 .* cos(B0*TR/2).^2 + sin(alpha/2).^2)));
+
+%% 
+if nargout > 2
+    dy = zeros(Npulse,Npulse,2);
+end
 
 % signal itself
 y(:,1) = sin(alpha) ./ (T1/T2 + 1 - cos(alpha) * (T1/T2 - 1));
@@ -15,7 +21,7 @@ y(:,2) = (T2*sin(alpha).*(cos(alpha) - 1))./(T1 + T2 - T1*cos(alpha) + T2*cos(al
 y(:,3) = -(T1*sin(alpha).*(cos(alpha) - 1))./(T1 + T2 - T1*cos(alpha) + T2*cos(alpha)).^2;
 
 % Dummy
-z = 0;
+z = y(:,1).' ./ tan(alpha/2);
     
 % Calculate the derivatives wrt. alpha only if we need it
 if nargout > 2

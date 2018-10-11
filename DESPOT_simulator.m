@@ -1,21 +1,34 @@
-function [y,z,dy,dz] = DESPOT_simulator(alpha, TR, T1, T2, Npulse_spgr)
+function [y,z,dy] = DESPOT_simulator(alpha, TR, T1, T2, Npulse_spgr, B0, B1)
 
 
 %% Dimensions
+Nspin  = length(T1);
 Npulse = length(alpha);
 
-[y1,~,dy1,~] = spgr_simulator(alpha(1:Npulse_spgr), TR, T1);
-[y2,~,dy2,~] = ssfp_simulator(alpha(Npulse_spgr+1:end), T1, T2);
+y = zeros(Npulse,3,Nspin);
+z = zeros(Npulse,  Nspin);
 
-y = zeros(Npulse,3);
-y(1:Npulse_spgr,1:2) = y1;
-y(Npulse_spgr+1:end,:) = y2;
+if nargout > 2
+    dy = zeros(Npulse,Npulse,3);
+end
 
-dy = zeros(Npulse,Npulse,3);
-dy(1:Npulse_spgr,1:Npulse_spgr,1:2) = dy1;
-dy(Npulse_spgr+1:end,Npulse_spgr+1:end,:) = dy2;
-
-z = 0;
-dz = 0;
-
+%% Loop over different T1, T2 values
+for n = Nspin:-1:1
+    if nargout > 2
+        [y1,z1,dy1,~] = spgr_simulator(B1 * alpha(1:Npulse_spgr), TR, T1(n));
+        [y2,z2,dy2,~] = ssfp_simulator( alpha(Npulse_spgr+1:end), TR, T1(n), T2(n), B0, B1);
+        
+        dy(1:Npulse_spgr,1:Npulse_spgr,        1:2,n) = dy1;
+        dy(Npulse_spgr+1:end,Npulse_spgr+1:end,  :,n) = dy2;
+    else
+        [y1, z1] = spgr_simulator(B1 * alpha(1:Npulse_spgr), TR, T1(n));
+        [y2, z2] = ssfp_simulator( alpha(Npulse_spgr+1:end), TR, T1(n), T2(n), B0, B1);
+    end
+    
+    y(1:Npulse_spgr,    1:2,n) = y1;
+    y(Npulse_spgr+1:end,  :,n) = y2;
+    
+    z(1:Npulse_spgr,    n) = z1;
+    z(Npulse_spgr+1:end,n) = z2;
+end
 end

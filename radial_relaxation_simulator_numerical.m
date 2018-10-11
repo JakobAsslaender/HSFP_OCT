@@ -70,12 +70,11 @@ for n = Nspin:-1:1
     drdT2 = [0; 0];
     drdB1 = [0; 0];
     
-    %            changed pulse,affected signal
-    drdT1dtheta = zeros(2,Npulse,Npulse);
-    drdT2dtheta = zeros(2,Npulse,Npulse);
-    drdB1dtheta = zeros(2,Npulse,Npulse);
-    
     if nargout > 2
+        %            changed pulse,affected signal
+        drdT1dtheta = zeros(2,Npulse,Npulse);
+        drdT2dtheta = zeros(2,Npulse,Npulse);
+        drdB1dtheta = zeros(2,Npulse,Npulse);
         drdtheta = zeros(Npulse,Npulse);
         dri      = ones(2,Npulse);
         drk      = ones(2,Npulse);

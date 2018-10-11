@@ -3,18 +3,18 @@ function [y,z,dy,dz] = spgr_simulator(alpha, TR, T1)
 
 %% Dimensions
 Npulse = length(alpha);
+alpha = abs(alpha);
 
-%% Loop over different T1, T2 values
-dy = zeros(Npulse,Npulse,2);
+if nargout > 2
+    dy = zeros(Npulse,Npulse,2);
+end
 
 % signal itself
 y(:,1) = sin(alpha) ./ (1 - T1/TR .* log(cos(alpha)));
 % derivative wrt. T1
-% y(:,2) = sin(alpha) .* (- log(cos(alpha))/TR) ./ (1 - T1 * log(cos(alpha))/TR).^2;
 y(:,2) = (TR*log(cos(alpha)).*sin(alpha))./(TR - T1*log(cos(alpha))).^2;
 
-% Dummy
-z = 0;
+z = 1 ./ (1 - T1/TR .* log(cos(alpha)));
     
 % Calculate the derivatives wrt. alpha only if we need it
 if nargout > 2
