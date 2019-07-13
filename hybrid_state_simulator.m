@@ -39,7 +39,6 @@ for n = Nspin:-1:1
     
     r = a .* (r0 + TR/T1(n) * int_cta);
     y(:,n) = r .* stheta;
-    z(:,n) = r .* ctheta;   
-    
+    z(:,n) = r .* ctheta;
 end
 end

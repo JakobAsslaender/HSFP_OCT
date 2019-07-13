@@ -1,6 +1,7 @@
 function [xy,z] = Bloch_simulator(alpha, TR, T1, T2, r0, B0, B1)
 
 TE = TR/2;
+
 Rot = @(alpha) [cos(alpha) -sin(alpha); sin(alpha) cos(alpha)];
 
 xy = zeros(length(alpha),length(T1));

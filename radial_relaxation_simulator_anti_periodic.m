@@ -17,6 +17,7 @@ ctheta = cos(theta);
 % B1 correction is only implemented in the calculation of r and in none of the
 % derivatives.
 B1cor = sqrt((stheta(end) * sin(B1*pi/2)^2)^2 + (ctheta(end) * cos(B1*pi))^2);
+% B1cor = 1;
 
 if nargout > 2
     dy = zeros(Npulse,Npulse,3,Nspin);
