@@ -1,4 +1,4 @@
-function dydt = radial_MT_ODE_no_m0f(t,y, theta_t, TRF_t, TR, Tmax, m0s, T1f, T2f, R, T1s, T2s)
+function dydt = radial_MT_ODE_sepT1(t,y, theta_t, TRF_t, TR, Tmax, m0s, T1f, T2f, R, T1s, T2s)
 
 theta = theta_t(t);
 TRF   = TRF_t(t);
