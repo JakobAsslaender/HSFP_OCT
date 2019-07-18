@@ -1,4 +1,4 @@
-function [s, b, ds, db] = simulate_MT_ODE(x, TR, t, m0s, T1f, T2f, R, T2s, bDerivatives, bfinite_pulse_correction)
+function [s, b, ds, db] = simulate_MT_ODE(x, TR, t, m0s, T1, T2f, R, T2s, bDerivatives, bfinite_pulse_correction)
 
 x(2,:) = x(2,:) * 1e-3; % convert ms to s
 Tmax = t(end);
@@ -19,7 +19,7 @@ else
     r0 = [m0s-1; m0s; 1];
 end
 
-f = @(t,r) radial_MT_ODE(t,r, xfun, TR, Tmax, m0s, T1f, T2f, R, T2s);
+f = @(t,r) radial_MT_ODE(t,r, xfun, TR, Tmax, m0s, T1, T2f, R, T2s);
 
 % options = odeset('RelTol', 1e-6);
 options = odeset('RelTol', 1e-9, 'AbsTol', 1e-12);
