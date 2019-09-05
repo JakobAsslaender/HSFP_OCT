@@ -20,6 +20,7 @@ else
 end
 
 f = @(t,r) radial_MT_ODE(t,r, xfun, TR, Tmax, m0s, T1, T2f, R, T2s);
+% f = @(t,r) radial_MT_ODE_XTrans(t,r, xfun, TR, Tmax, m0s, T1, T2f, R, T2s);
 
 % options = odeset('RelTol', 1e-6);
 options = odeset('RelTol', 1e-9, 'AbsTol', 1e-12);
