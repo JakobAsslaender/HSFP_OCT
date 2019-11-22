@@ -47,9 +47,9 @@ switch model
         for is = 1:length(slice_profile)
             switch model
                 case 'HSFP_IR'
-                    s = s + radial_relaxation_simulator_closed_form(theta, TR, param(3), param(4), -1, B0, B1*slice_profile(is));
+                    s = s + radial_relaxation_simulator_closed_form(theta, TR, param(2), param(3), -1, B0, B1*slice_profile(is));
                 case 'HSFP_anti'
-                    s = s + radial_relaxation_simulator_anti_periodic(theta, TR, param(3), param(4), B0, B1*slice_profile(is));
+                    s = s + radial_relaxation_simulator_anti_periodic(theta, TR, param(2), param(3), B0, B1*slice_profile(is));
             end                
 %             s = s + param(1) * exp(1i*param(2)) * hybrid_state_simulator(theta, TR, param(3), param(4), 'anti', B0, B1*slice_profile(is));
 %             s = s + param(1) * exp(1i*param(2)) * hybrid_state_simulator(theta, TR, param(3), param(4), -1, B0, B1*slice_profile(is));
@@ -63,8 +63,10 @@ switch model
             s = s(23:45:end,:);
         end
         
-        J = [s(:,1), 1i*s(:,1), (param(1) + 1i * param(2)) * s(:,2:end)];
-        s = (param(1) + 1i * param(2)) * s(:,1);        
+%         J = [s(:,1), 1i*s(:,1), (param(1) + 1i * param(2)) * s(:,2:end)];
+%         s = (param(1) + 1i * param(2)) * s(:,1);     
+        J = [s(:,1), param(1) * s(:,2:end)];
+        s = param(1) * s(:,1);        
     case 'HSFP_SS'
         s = 0;
         TR = TR/180;
@@ -78,14 +80,16 @@ switch model
             ts(10:end-9,:) = ts(10:end-9,:) * ta(end,is);
             ts = ts(:);
             
-            s = s + radial_relaxation_simulator_closed_form(ts, TR, param(3), param(4), -1, B0, B1);
+            s = s + radial_relaxation_simulator_closed_form(ts, TR, param(2), param(3), -1, B0, B1);
         end
         s = s / size(ta,2);
         
         s = s(90:180:end,:);
         
-        J = [s(:,1), 1i*s(:,1), (param(1) + 1i * param(2)) * s(:,2:end)];
-        s = (param(1) + 1i * param(2)) * s(:,1);
+%         J = [s(:,1), 1i*s(:,1), (param(1) + 1i * param(2)) * s(:,2:end)];
+%         s = (param(1) + 1i * param(2)) * s(:,1);
+        J = [s(:,1), param(1) * s(:,2:end)];
+        s = param(1) * s(:,1);
         
     case 'Bloch'
         alpha = theta(2:end)' + theta(1:end-1)';
@@ -110,7 +114,8 @@ switch model
         
         s = 0;
         for is = 1:length(slice_profile)
-            s = (param(1) + 1i * param(2)) * Bloch_simulator_MRF(alpha, TRs, param(3), param(4), -1, B0, B1*slice_profile(is));
+%             s = (param(1) + 1i * param(2)) * Bloch_simulator_MRF(alpha, TRs, param(3), param(4), -1, B0, B1*slice_profile(is));
+            s = param(1) * Bloch_simulator_MRF(alpha, TRs, param(2), param(3), -1, B0, B1*slice_profile(is));
         end
         s = s / length(slice_profile);
         
@@ -124,17 +129,18 @@ switch model
     case 'LL'
         s = 0;
         for is = 1:length(slice_profile)
-            st = (param(1) + 1i * param(2)) * look_locker_simulator(theta * B1 * slice_profile(is), TR, param(3), -1);
+%             st = (param(1) + 1i * param(2)) * look_locker_simulator(theta * B1 * slice_profile(is), TR, param(3), -1);
+            st = param(1) * look_locker_simulator(theta * B1 * slice_profile(is), TR, param(2), -1);
             s = s + st(:,1);
         end
         s = s / length(slice_profile);
 end
 
 F = u*s;
-F = [real(F); imag(F)];
+% F = [real(F); imag(F)];
 
 if nargout > 1
     J = u*J;
-    J = [real(J); imag(J)];
+%     J = [real(J); imag(J)];
 end
 end

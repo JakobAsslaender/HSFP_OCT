@@ -17,17 +17,28 @@ for n = Nspin:-1:1
     a   = exp(- TR * cumsum(1./T1s));
     r   = a .* (r0 + TR/T1(n) * cumsum(1./a));
     
+%     b   = cumsum(1./T1s);
+%     r   = a .* r0 + TR/T1(n) * (1 + cumsum( exp(-TR * b)));
+    
     %% Calculate the derivative of the spin evolution wrt. T1
     dT1sdT1 = (1/T1(n) - 1/TR * log(cos(theta))).^(-2) .* T1(n)^(-2);
     dadT1 =  a    .*       TR        .* cumsum(dT1sdT1./T1s.^2);
+    dadT1oa =              TR        .* cumsum(dT1sdT1./T1s.^2);
     drdT1 = dadT1 .* (r0 + TR/T1(n) * cumsum(1./a))  + ...
-             a    .* (   - TR/T1(n)^2 * cumsum(1./a) - TR/T1(n) * cumsum(dadT1./a.^2));
+             a    .* (   - TR/T1(n)^2 * cumsum(1./a) - TR/T1(n) * cumsum((dadT1oa)./a));
          
     
     %% covert from spherical to Cartesian coordinates
     y(:,2,n) = drdT1 .* sin(theta);
     y(:,1,n) =  r    .* sin(theta);
     z = (r .* cos(theta)).';
+    
+    % assuming that we are in steady state at this time
+    for it = 2:size(y,1)
+        if any(isnan(y(it,:))) || any(isinf(y(it,:)))
+            y(it,:,:) = y(it-1,:,:);
+        end
+    end
     
     % Calculate the derivatives wrt. theta only if we need it
     if nargout > 2        
