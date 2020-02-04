@@ -60,7 +60,7 @@ for n = Nspin:-1:1
                         +   (diag(dadtheta)./a.'./a.')                 * ( a    * (TR/T1(n)^2));
         drdT1dtheta   = triu(drdT1dtheta) + bsxfun(@times, dadT1dtheta, (r0 + TR/T1(n) * cumsum(1./a   )).') ...
                                           + bsxfun(@times,    dadtheta, ( - TR/T1(n)^2 * cumsum(1./a   )).') ...
-                                          + bsxfun(@times,    dadtheta, ( - TR/T1(n)   * cumsum(dadT1./a.^2)).');
+                                          + bsxfun(@times,    dadtheta, ( - TR/T1(n)   * cumsum(dadT1./a./a)).');
         
 %         %% covert from spherical to Cartesian coordinates
         dy(:,:,2,n) = -bsxfun(@times, drdT1dtheta, sin(theta)).' + diag(drdT1 .* cos(theta));

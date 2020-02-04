@@ -1,4 +1,4 @@
-function [y,z,dy] = DESPOT_simulator(alpha, TR, T1, T2, Npulse_spgr, B0, B1, FWHM)
+function [y,z,dy,dz] = DESPOT_simulator(alpha, TR, T1, T2, Npulse_spgr, B0, B1, FWHM)
 
 if nargin < 8 || isempty(FWHM)
     FWHM = 0;
@@ -13,6 +13,7 @@ z = zeros(Npulse,  Nspin);
 
 if nargout > 2
     dy = zeros(Npulse,Npulse,3);
+    dz = zeros(Npulse,Npulse,3);
 end
 
 %% Loop over different T1, T2 values

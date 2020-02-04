@@ -36,7 +36,6 @@ if nargout > 1
         end
         gr(k) = - sum(diag(I \ dIdx / I) .* weights(correlate));
     end
-    
 end
 
 end
