@@ -10,7 +10,7 @@ if bfinite_pulse_correction
         xtmp = hann_interpolation(TR:TR:Tmax, Tmax, x).';
     end
     xfun = @(t) finite_pulse_correction(xtmp, t, TR, Tmax);
-    TR = 'finite_pulse_correction';
+    % TR = 'finite_pulse_correction';
 else
     xfun = @(t) hann_interpolation(t, Tmax, x);
 end
@@ -28,6 +28,7 @@ end
 
 N=floor(Tmax/TR)-1;
 fpgrid=TR/2+TR*(0:N).';
+TRF=xtmp(1:end-1,2);
 rfbeg=fpgrid(2:end)-TR/2-TRF/2;
 rfend=fpgrid(2:end)-TR/2+TRF/2;
 span=[0;sort([rfbeg;rfend]);Tmax];
@@ -40,6 +41,7 @@ options = odeset('RelTol', 1e-9, 'AbsTol', 1e-12);
 % options = odeset('RelTol', 1e5, 'AbsTol', 1e5, 'MaxStep', TR/10, 'InitialStep', TR/10);
 % options = odeset('RelTol', 1e5, 'AbsTol', 1e5, 'MaxStep', 4.5e-4, 'InitialStep', 4.5e-4);
 
+b=zeros(length(t),length(r0));
 for ir = 1:3
     for j=1:size(span,2)
         switch mod(j,2)
@@ -51,13 +53,18 @@ for ir = 1:3
         sol = ode45(f,[span(1,j),span(2,j)],r0,options);
         r0 = deval(sol,span(2,j));
         locs=find( t<=span(2,j) & t>=span(1,j));
-        b(locs,:)=deval(sol,t(locs));
+        if ~isempty(locs)
+            for l=1:length(locs)
+                b(locs(l),:)=deval(sol,t(locs(l)));
+            end
+        end
     end
     
     r0(1:3:end) = -r0(1:3:end); % anti periodic boundary conditions for the free pool
 %     r0(2:3:end) =  r0(2:3:end) * (1 - pi^2 * T2s/1e3/max(x(2,:))); % periodic boundary conditions for the semi-solid pool, attenuated by the inversion pulse
     r0(2:3:end) =  r0(2:3:end) * exp(- pi^2 * T2s/max(x(2,:))); % periodic boundary conditions for the semi-solid pool, attenuated by the inversion pulse
 end
+
 
 s = b(:,1:3:end); % extract the free pool only
 
