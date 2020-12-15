@@ -1,10 +1,15 @@
 function [s, b, ds, db] = simulate_MT_ODE(x, TR, t, m0s, T1, T2f, R, T2s, bDerivatives, bfinite_pulse_correction)
 
-x(2,:) = x(2,:) * 1e-3; % convert ms to s
+% x(2,:) = x(2,:) * 1e-3; % convert ms to s
 Tmax = t(end);
 
 if bfinite_pulse_correction
-    xfun = @(t) finite_pulse_correction(x, t, TR, Tmax);
+    if size(x, 2) == length(TR:TR:Tmax)
+        xtmp = x.';
+    else
+        xtmp = hann_interpolation(TR:TR:Tmax, Tmax, x).';
+    end
+    xfun = @(t) finite_pulse_correction(xtmp, t, TR, Tmax);
     TR = 'finite_pulse_correction';
 else
     xfun = @(t) hann_interpolation(t, Tmax, x);
@@ -22,16 +27,16 @@ end
 f = @(t,r) radial_MT_ODE(t,r, xfun, TR, Tmax, m0s, T1, T2f, R, T2s);
 % f = @(t,r) radial_MT_ODE_XTrans(t,r, xfun, TR, Tmax, m0s, T1, T2f, R, T2s);
 
-% options = odeset('RelTol', 1e-6);
 options = odeset('RelTol', 1e-9, 'AbsTol', 1e-12);
 % options = odeset('RelTol', 1e5, 'AbsTol', 1e5, 'MaxStep', TR/10, 'InitialStep', TR/10);
 % options = odeset('RelTol', 1e5, 'AbsTol', 1e5, 'MaxStep', 4.5e-4, 'InitialStep', 4.5e-4);
 
-for ir = 1:2
+for ir = 1:3
     [~, b] = ode45(f,t,r0,options);
     r0 = b(end,:);
     r0(1:3:end) = -r0(1:3:end); % anti periodic boundary conditions for the free pool
-    r0(2:3:end) =  r0(2:3:end) * (1 - pi^2 * T2s/1e3/max(x(2,:))); % periodic boundary conditions for the semi-solid pool, attenuated by the inversion pulse
+%     r0(2:3:end) =  r0(2:3:end) * (1 - pi^2 * T2s/1e3/max(x(2,:))); % periodic boundary conditions for the semi-solid pool, attenuated by the inversion pulse
+    r0(2:3:end) =  r0(2:3:end) * exp(- pi^2 * T2s/max(x(2,:))); % periodic boundary conditions for the semi-solid pool, attenuated by the inversion pulse
 end
 
 s = b(:,1:3:end); % extract the free pool only
@@ -53,7 +58,7 @@ if nargout > 2
             ds(:,ti+1,2,ix) = ds(:,ti+1,2,ix) + (s(:,ix) .* cos(xt(1,:).') .* w.');
         end
     end
-    ds(:,:,2,:) = ds(:,:,2,:) * 1e-3;
+%     ds(:,:,2,:) = ds(:,:,2,:) * 1e-3;
     ds = permute(ds, [1 3 2 4]);
     ds = reshape(ds, size(ds,1), [], 6);
     db = [];

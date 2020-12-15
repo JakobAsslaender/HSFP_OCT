@@ -4,13 +4,15 @@ x = xfun(t);
 theta = x(1,:);
 
 if ischar(TR)
-    nbar = x(2,:)*1e-3; % The 1e-3 is for converting T2s from ms to s
+%     nbar = x(2,:)*1e-3; % The 1e-3 is for converting T2s from ms to s
+    nbar = x(2,:);
     if length(y) > 18
         error('Calculating the derivative wrt. theta is only implemented for x(2,:) being TRF rather than the attenuation rate');
     end
 else
     TRF  = x(2,:);
-    nbar = 4*theta^2 * 1e-3 / TRF / TR;
+    nbar = 4*theta^2 / TRF / TR;
+%     nbar = 4*theta^2 * 1e-3 / TRF / TR;
 end
 
 ct = cos(theta);
