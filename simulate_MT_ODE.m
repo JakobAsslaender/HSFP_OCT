@@ -12,6 +12,7 @@ if bfinite_pulse_correction
     xfun = @(t) finite_pulse_correction(xtmp, t, TR, Tmax);
     % TR = 'finite_pulse_correction';
 else
+    xtmp = x.';
     xfun = @(t) hann_interpolation(t, Tmax, x);
 end
 xt = xfun(t);

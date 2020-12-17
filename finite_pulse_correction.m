@@ -1,4 +1,4 @@
-function fpt = finite_pulse_correction(x,t, TR,Tmax)
+function [fpt, TRFJ] = finite_pulse_correction(x,t, TR,Tmax)
 
 TH=x(:,1);
 TRF=x(:,2);
